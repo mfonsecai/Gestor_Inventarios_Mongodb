@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Inventario</h1>
+        <a href="{{ url_for('add_product') }}">Agregar producto</a>
+
+        <!-- Enlace para ver transacciones -->
+        <a href="{{ url_for('transacciones') }}">Ver Transacciones</a>
+
+        <!-- Enlace para listar usuarios (solo para superadmin) -->
+        {% if current_user.rol == 'superadmin' %}
+            <a href="{{ url_for('lista_usuarios') }}">Lista de Usuarios</a>
+        {% endif %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto._id }}</td>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.descripcion }}</td>
+                    <td>{{ producto.categoria }}</td>
+                    <td>{{ producto.precio }}</td>
+                    <td>{{ producto.stock }}</td>
+                    <td>
+                        <a href="{{ url_for('update_product', product_id=producto._id) }}" class="btn-actualizar">Actualizar</a>
+                        <form action="{{ url_for('delete_product', product_id=producto._id) }}" method="POST" style="display:inline;" onsubmit="return confirmarEliminacion(this)">
+                            <button type="submit" class="btn-eliminar">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7">No hay productos registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <footer>
+            <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            <p>&copy; 2025 Gestión de Inventarios | </p>
+        </footer>
+    </div>
+    
+    <script>
+        function confirmarEliminacion(form) {
+            let confirmacion = confirm("¿Seguro que quiere eliminar este producto del stock?");
+            if (confirmacion) {
+                console.log("Enviando formulario de eliminación:", form);
+                return true;
+            } else {
+                console.log("Eliminación cancelada por el usuario");
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

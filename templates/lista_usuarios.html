@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
+
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Usuarios</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.id }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.rol }}</td>
+                    <td>
+                        <a href="{{ url_for('asignar_rol', user_id=usuario.id) }}">Asignar Rol</a>
+                        {% if current_user.rol == 'superadmin' %}
+                            | <a href="{{ url_for('eliminar_usuario', user_id=usuario.id) }}" 
+                                 onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?')">Eliminar</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <a href="{{ url_for('index') }}">Volver al inventario</a>
+    </div>
+</body>
+</html>

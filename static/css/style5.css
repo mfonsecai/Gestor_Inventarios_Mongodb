@@ -1,0 +1,92 @@
+/* Estilo general del body */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #A0D8EF, #B3E5FC, #E3F2FD);
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+/* Contenedor principal */
+.container {
+    background: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+    padding: 70px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 100%;
+    max-width: 800px; /* Ancho óptimo */
+    border: 3px solid #437fce; /* Línea de color en el borde */
+
+}
+
+/* Título */
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+    font-family: Boldonsed;
+    font-size: 40px; 
+}
+
+/* Etiquetas */
+label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2d3436;
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+/* Campos de entrada */
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* Botón de registro */
+button {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.3s ease;
+
+    background: #8ac0ff;
+    color: white;
+    transition: background 0.3s ease;
+    font-weight: bold;
+
+}
+
+button:hover {
+    background: #74b9ff;
+}
+
+/* Enlace de inicio de sesión */
+a {
+    display: block;
+    margin-top: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    background: #8ac0ff;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px;
+
+    border: none;
+}
+
+a:hover {
+    color: #6c5ce7;
+}

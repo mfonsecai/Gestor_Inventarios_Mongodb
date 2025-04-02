@@ -1,0 +1,109 @@
+/* ---------------------------------------------
+   Estilos Generales para toda la aplicación
+--------------------------------------------- */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+h1 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ---------------------------------------------
+   Estilos para el formulario de actualizar producto
+--------------------------------------------- */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+input, button {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+input[type="text"], input[type="number"] {
+    width: 100%;
+}
+
+input:focus, button:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button {
+    background-color: #ffc107;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e0a800;
+}
+
+button:active {
+    background-color: #c69500;
+}
+
+/* ---------------------------------------------
+   Mensajes de éxito y error
+--------------------------------------------- */
+.message {
+    padding: 10px;
+    margin: 20px 0;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.message.success {
+    background-color: #28a745;
+}
+
+.message.error {
+    background-color: #dc3545;
+}
+
+/* ---------------------------------------------
+   Estilos para el enlace de regreso
+--------------------------------------------- */
+a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 16px;
+    text-align: center;
+    display: block;
+    margin-top: 20px;
+}
+
+a:hover {
+    color: #0056b3;
+}
