@@ -48,9 +48,9 @@ def format_datetime(value, format='%Y-%m-%d %H:%M'):
 
 app.jinja_env.filters['datetimeformat'] = format_datetime
 
+
 # --------------------------------------------------
 # RUTAS DE LA APLICACIÓN
-# --------------------------------------------------
 
 @app.route('/')
 def index():
