@@ -9,6 +9,12 @@ body {
     color: #333;
 }
 
+body, table, th, td, h1, a {
+    font-family: 'Cormorant', serif !important;
+}
+
+
+
 h1 {
     color: #333;
     font-size: 28px;
@@ -86,7 +92,7 @@ td a:hover {
 a, button {
     text-decoration: none;
     color: white;
-    background-color: #8ac0ff;
+    background-color: #7f878f;
     padding: 8px 16px;
     border-radius: 4px;
     font-size: 14px;
@@ -169,22 +175,31 @@ a {
 
 /* Estilo específico para el botón de actualizar */
 .btn-actualizar {
-    background-color: #27c02c; /* Verde */
+    background-color: #2757c0; /* Verde */
     color: #fff;
 
 }
 
 .btn-actualizar:hover {
-    background-color: #45a049; /* Verde más oscuro al pasar el cursor */
+    background-color: #1114c7; /* Verde más oscuro al pasar el cursor */
 
 }
 
-/* Estilo específico para el botón de eliminar */
 .btn-eliminar {
     background-color: #f44336; /* Rojo */
     color: #ffffff;
+    border: none; /* Elimina cualquier borde */
+    outline: none; /* Evita el contorno negro al hacer clic */
 }
 
 .btn-eliminar:hover {
     background-color: #da190b; /* Rojo más oscuro al pasar el cursor */
+}
+.btn-eliminar, .btn-actualizar {
+    padding: 10px 16px; /* Ajusta el relleno para que ambos sean iguales */
+    font-size: 14px; /* Tamaño de fuente uniforme */
+    border-radius: 4px; /* Bordes redondeados iguales */
+    display: inline-block;
+    text-align: center;
+    width: 120px; /* Define un ancho fijo si es necesario */
 }
