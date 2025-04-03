@@ -1,104 +1,138 @@
-/* Reset básico */
+/* Reset y fuentes */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Fondo de la página */
+/* Paleta de naranjas */
+:root {
+    --primary: #E67E22;       /* Naranja principal */
+    --primary-dark: #D35400;  /* Naranja oscuro */
+    --primary-light: #F39C12; /* Naranja claro */
+    --accent: #ECF0F1;        /* Gris claro para contrastes */
+    --text: #2C3E50;          /* Texto oscuro */
+    --text-light: #7F8C8D;    /* Texto gris */
+}
+
+/* Fondo con gradiente sutil */
 body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #A0D8EF, #B3E5FC, #E3F2FD);
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FDEBD0, #F5CBA7);
+    padding: 20px;
 }
-
-
 
 /* Contenedor principal */
 .container {
-    background: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
-    padding: 80px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
+    background: white;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(230, 126, 34, 0.2);
     width: 100%;
-    max-width: 700px; /* Ancho aumentado */
-    font-family: Arial, sans-serif; /* Fuente corregida */
-    font-size: 20px;
-    border: 3px solid #437fce; /* Línea de color en el borde */
+    max-width: 450px;
+    text-align: center;
+    border-top: 5px solid var(--primary);
 }
- 
 
+/* Logo/encabezado */
+.logo h1 {
+    color: var(--text);
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    font-weight: 800;
+}
 
+.logo h1 span {
+    color: var(--primary);
+}
 
-/* Título */
-h1 {
+/* Formulario */
+.form-group {
     margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-    font-family: Boldonsed;
-    font-size: 40px; 
-}
-
-/* Campos del formulario */
-form {
-    display: flex;
-    flex-direction: column;
+    text-align: left;
 }
 
 label {
-    font-weight: bold;
-    text-align: left;
-    margin-bottom: 5px;
-    color: #555;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
 }
 
 input {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #EDEDED;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background-color: #F9F9F9;
 }
 
-/* Botón de inicio de sesión */
-button {
-    background: #8ac0ff;
-    color: white;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    font-weight: bold;
+input:focus {
+    border-color: var(--primary-light);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
 
+/* Botón */
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 button:hover {
-    background: #4a6edc;
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
 }
 
-/* Enlace de registro */
+/* Enlace */
+.footer {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #EEE;
+}
+
 a {
-    display: block;
-    margin-top: 10px;
-    color: #ffffff;
+    color: var(--text-light);
     text-decoration: none;
-    font-weight: bold;
-    background: #8ac0ff;
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 5px;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
 
-    border: none;
-
+a strong {
+    color: var(--primary);
+    font-weight: 600;
 }
 
 a:hover {
-    background: #4a6edc;
+    color: var(--primary-dark);
+}
 
+/* Efectos responsivos */
+@media (max-width: 480px) {
+    .container {
+        padding: 30px;
+    }
+    
+    .logo h1 {
+        font-size: 2rem;
+    }
 }

@@ -6,35 +6,57 @@
     <title>Visualizar Inventario</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
-
 </head>
 <body>
     <div class="container">
-        <h1>Inventario</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for producto in productos %}
-                <tr>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ producto.descripcion }}</td>
-                    <td>{{ producto.categoria }}</td>
-                    <td>{{ producto.precio }}</td>
-                    <td>{{ producto.stock }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <header>
+            <h1>INVENTARIO <span>DISponible</span></h1>
+            <p class="subtitle">Vista de solo lectura para empleados</p>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>PRODUCTO</th>
+                        <th>DESCRIPCIÓN</th>
+                        <th>CATEGORÍA</th>
+                        <th>PRECIO</th>
+                        <th>STOCK</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.descripcion or '-' }}</td>
+                        <td>
+                            <span class="category-badge">{{ producto.categoria }}</span>
+                        </td>
+                        <td class="price">${{ "%.2f"|format(producto.precio) }}</td>
+                        <td class="stock {% if producto.stock < 10 %}low-stock{% endif %}">
+                            {{ producto.stock }}
+                            {% if producto.stock < 10 %}
+                            <span class="stock-warning">!</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="no-products">
+                            <i class="icon">📭</i> No hay productos registrados
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <a href="{{ url_for('logout') }}" class="btn-logout">CERRAR SESIÓN
+            </a>
+            <p>Sistema de Inventarios &copy; 2025</p>
+        </footer>
     </div>
 </body>
 </html>

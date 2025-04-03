@@ -109,30 +109,39 @@ def registro():
         return redirect(url_for('login'))
     return render_template('registro.html')
 
-@app.route('/asignar_rol/<user_id>', methods=['GET', 'POST'])
+@app.route('/asignar_rol/<string:user_id>', methods=['GET', 'POST'])
 @login_required
 def asignar_rol(user_id):
-    """Permite a superadmins cambiar roles de usuarios"""
     if current_user.rol != 'superadmin':
         flash("No tienes permisos para acceder a esta página", "error")
         return redirect(url_for('index'))
 
-    usuario = db.usuarios.find_one({'_id': ObjectId(user_id)})
-    if not usuario:
-        flash("Usuario no encontrado", "error")
+    try:
+        # Convertir a ObjectId solo si es necesario
+        if not ObjectId.is_valid(user_id):
+            flash("ID de usuario inválido", "error")
+            return redirect(url_for('lista_usuarios'))
+            
+        usuario = db.usuarios.find_one({'_id': ObjectId(user_id)})
+        if not usuario:
+            flash("Usuario no encontrado", "error")
+            return redirect(url_for('lista_usuarios'))
+
+        if request.method == 'POST':
+            nuevo_rol = request.form['rol']
+            db.usuarios.update_one(
+                {'_id': ObjectId(user_id)},
+                {'$set': {'rol': nuevo_rol}}
+            )
+            flash(f"Rol actualizado a {nuevo_rol}", "success")
+            return redirect(url_for('lista_usuarios'))
+
+        return render_template('asignar_rol.html', usuario=usuario)
+        
+    except Exception as e:
+        flash(f"Error al procesar la solicitud: {str(e)}", "error")
         return redirect(url_for('lista_usuarios'))
-
-    if request.method == 'POST':
-        nuevo_rol = request.form['rol']
-        db.usuarios.update_one(
-            {'_id': ObjectId(user_id)},
-            {'$set': {'rol': nuevo_rol}}
-        )
-        flash(f"Rol actualizado a {nuevo_rol}", "success")
-        return redirect(url_for('lista_usuarios'))
-
-    return render_template('asignar_rol.html', usuario=usuario)
-
+    
 @app.route('/transacciones')
 @login_required
 def transacciones():
@@ -274,10 +283,9 @@ def delete_product(product_id):
         flash(f"Error al eliminar producto: {str(e)}", "error")
         return redirect(url_for('index'))
     
-@app.route('/eliminar_usuario/<user_id>')
+@app.route('/eliminar_usuario/<user_id>', methods=['POST'])
 @login_required
 def eliminar_usuario(user_id):
-    """Elimina un usuario (solo para superadmins)"""
     if current_user.rol != 'superadmin':
         flash("No tienes permisos para acceder a esta página", "error")
         return redirect(url_for('index'))
@@ -290,10 +298,6 @@ def eliminar_usuario(user_id):
 @login_required
 def lista_usuarios():
     """Muestra lista de usuarios (solo para superadmins)"""
-    if current_user.rol != 'superadmin':
-        flash("No tienes permisos para acceder a esta página", "error")
-        return redirect(url_for('index'))
-
     usuarios = list(db.usuarios.find())
     return render_template('lista_usuarios.html', usuarios=usuarios)
 

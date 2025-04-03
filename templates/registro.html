@@ -3,30 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <title>Registro - Sistema de Inventario</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style5.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
-
 </head>
 <body>
     <div class="container">
-        <h1>Registro</h1>
-        <form method="POST">
-            <label for="nombre">Nombre de usuario:</label>
-            <input type="text" id="nombre" name="nombre" required><br><br>
+        <div class="logo">
+            <h1>REGISTRAR<span>SE</span></h1>
+            <p class="subtitle">Crea tu cuenta para acceder al sistema</p>
+        </div>
+        <form method="POST" action="{{ url_for('registro') }}">
+            <div class="form-group">
+                <label for="nombre">Nombre de usuario:</label>
+                <input type="text" id="nombre" name="nombre" required placeholder="Ej: usuario123">
+            </div>
             
-            <label for="rol">Rol:</label>
-            <select id="rol" name="rol" required>
-                <option value="empleado">Empleado</option>
-            </select><br><br>
+            <div class="form-group">
+                <label for="rol">Rol:</label>
+                <select id="rol" name="rol" required>
+                    <option value="" disabled selected>Selecciona tu rol</option>
+                    <option value="empleado">Empleado</option>
+                </select>
+            </div>
             
-            <label for="contrasena">Contraseña:</label>
-            <input type="password" id="contrasena" name="contrasena" required><br><br>
+            <div class="form-group">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" name="contrasena" required placeholder="Mínimo 8 caracteres">
+            </div>
             
-            <button type="submit">Registrarse</button>
+            <button type="submit">CREAR CUENTA</button>
         </form>
-        <br>
-        <a href="{{ url_for('login') }}">Iniciar Sesión</a>
+        <div class="footer">
+            <p>¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a></p>
+        </div>
     </div>
 </body>
 </html>

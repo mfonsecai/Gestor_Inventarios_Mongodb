@@ -5,11 +5,11 @@
     --primary-light: #F39C12;
     --secondary: #2C3E50;
     --accent: #ECF0F1;
+    --success: #27AE60;
+    --danger: #E74C3C;
     --text: #2C3E50;
     --text-light: #7F8C8D;
     --border: #EDEDED;
-    --success: #27AE60;
-    --danger: #E74C3C;
     --background: #FDF2E9;
 }
 
@@ -38,19 +38,19 @@ body {
     box-shadow: 0 10px 30px rgba(230, 126, 34, 0.1);
     overflow: hidden;
     border-top: 5px solid var(--primary);
+    padding: 30px;
 }
 
 /* Encabezado */
 .header {
-    padding: 25px 30px;
     text-align: center;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 25px;
 }
 
 .header h1 {
     font-size: 1.8rem;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 800;
 }
 
@@ -58,88 +58,57 @@ body {
     color: var(--primary);
 }
 
-.header p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-}
-
-/* Información del producto */
-.product-info {
-    padding: 20px;
-    background-color: var(--accent);
-    border-radius: 8px;
-    margin: 20px 0;
-    text-align: center;
-}
-
-.product-name {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--primary-dark);
-    margin-bottom: 5px;
-}
-
-.product-category {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    font-style: italic;
-}
-
 /* Formulario */
-.update-form {
-    padding: 0 30px 30px;
+.role-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text);
+.form-group label {
     font-weight: 600;
+    color: var(--text);
     font-size: 0.95rem;
 }
 
-input {
-    width: 100%;
+.form-group select {
     padding: 12px 15px;
     border: 2px solid var(--border);
     border-radius: 8px;
     font-size: 1rem;
-    transition: all 0.3s;
     background-color: #F9F9F9;
+    transition: all 0.3s;
+    cursor: pointer;
 }
 
-input:focus {
+.form-group select:focus {
     border-color: var(--primary-light);
     outline: none;
     box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
-}
-
-input[readonly] {
-    background-color: #EEE;
-    color: var(--text-light);
-    cursor: not-allowed;
 }
 
 /* Botones */
 .form-actions {
     display: flex;
     gap: 12px;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
-.btn-update, .btn-cancel {
-    padding: 14px;
+.btn-submit, .btn-cancel {
+    padding: 12px;
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
     text-decoration: none;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
@@ -147,12 +116,12 @@ input[readonly] {
     border: none;
 }
 
-.btn-update {
+.btn-submit {
     background-color: var(--primary);
     color: white;
 }
 
-.btn-update:hover {
+.btn-submit:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
@@ -168,21 +137,29 @@ input[readonly] {
     background-color: #E0E0E0;
 }
 
+/* Badge de rol actual */
+.current-role {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 5px;
+    background-color: rgba(230, 126, 34, 0.1);
+    color: var(--primary-dark);
+}
+
 /* Responsive */
 @media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+    
     .form-actions {
         flex-direction: column;
     }
     
     .header h1 {
         font-size: 1.5rem;
-    }
-    
-    .container {
-        padding: 15px;
-    }
-    
-    .update-form {
-        padding: 0 15px 20px;
     }
 }

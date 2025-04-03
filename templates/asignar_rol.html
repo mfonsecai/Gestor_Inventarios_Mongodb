@@ -3,24 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asignar Rol</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Asignar Rol - Inventario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style6.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
-
 </head>
 <body>
     <div class="container">
-        <h1>Asignar Rol a {{ usuario.nombre }}</h1>
-        <form method="POST">
-            <label for="rol">Nuevo Rol:</label>
-            <select id="rol" name="rol" required>
-                <option value="empleado">Empleado</option>
-                <option value="admin">Admin</option>
-            </select><br><br>
-            <button type="submit">Asignar Rol</button>
+        <div class="header">
+            <h1>ASIGNAR <span>ROL</span></h1>
+            <p>Modificando permisos para: <strong>{{ usuario.nombre }}</strong></p>
+            <div class="current-role">Rol actual: {{ usuario.rol }}</div>
+        </div>
+        
+        <form method="POST" class="role-form">
+            <div class="form-group">
+                <label for="rol">SELECCIONAR NUEVO ROL:</label>
+                <select name="rol" id="rol" required>
+                    <option value="empleado" {% if usuario.rol == 'empleado' %}selected{% endif %}>Empleado</option>
+                    <option value="admin" {% if usuario.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                    {% if current_user.rol == 'superadmin' %}
+                    <option value="superadmin" {% if usuario.rol == 'superadmin' %}selected{% endif %}>Super Administrador</option>
+                    {% endif %}
+                </select>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="icon">✓</i> CONFIRMAR CAMBIO
+                </button>
+                <a href="{{ url_for('lista_usuarios') }}" class="btn-cancel">
+                    <i class="icon">✕</i> CANCELAR
+                </a>
+            </div>
         </form>
-        <br>
-        <a href="{{ url_for('index') }}">Volver al inventario</a>
     </div>
 </body>
 </html>

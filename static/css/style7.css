@@ -1,82 +1,191 @@
-/* Estilo general del body */
+/* Variables y reset */
+:root {
+    --primary: #E67E22;
+    --primary-dark: #D35400;
+    --primary-light: #F39C12;
+    --secondary: #2C3E50;
+    --accent: #ECF0F1;
+    --text: #2C3E50;
+    --text-light: #7F8C8D;
+    --border: #EDEDED;
+    --success: #27AE60;
+    --background: #FDF2E9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 body {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: #ffffff; /* Fondo completamente blanco */
-    font-family: Arial, sans-serif;
-    margin: 0;
+    min-height: 100vh;
+    background-color: var(--background);
+    padding: 20px;
 }
 
-/* Título */
-h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-    font-family: Boldonsed;
-    font-size: 40px; 
-}
-
-/* Contenedor del formulario */
-form {
-    background: #f8f8f8; /* Fondo ligeramente gris para resaltar el formulario */
-    padding: 30px;
+/* Contenedor principal */
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(230, 126, 34, 0.1);
+    overflow: hidden;
+    border-top: 5px solid var(--primary);
+}
+
+/* Encabezado */
+.header {
+    padding: 25px 30px;
     text-align: center;
-    width: 100%;
-    max-width: 400px; /* Ancho óptimo */
+    border-bottom: 1px solid var(--border);
 }
 
-/* Etiquetas */
+.header h1 {
+    font-size: 2rem;
+    color: var(--text);
+    margin-bottom: 8px;
+    font-weight: 800;
+}
+
+.header h1 span {
+    color: var(--primary);
+}
+
+.header p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+/* Formulario */
+.product-form {
+    padding: 25px 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.half-width {
+    flex: 1;
+}
+
 label {
-    font-size: 16px;
-    font-weight: bold;
-    color: #2d3436;
     display: block;
-    text-align: left;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
 }
 
-/* Campos de entrada */
-input {
+input, textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-bottom: 15px;
+    padding: 12px 15px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background-color: #F9F9F9;
 }
 
-/* Botón */
-button {
-    background: #8ac0ff; /* Azul vibrante */
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    font-size: 16px;
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary-light);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+.input-with-symbol {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-symbol span {
+    position: absolute;
+    left: 15px;
+    color: var(--text-light);
+    font-weight: bold;
+}
+
+.input-with-symbol input {
+    padding-left: 30px;
+}
+
+/* Botones */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.btn-submit, .btn-cancel {
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    width: 100%;
-    transition: 0.3s ease;
-}
-
-button:hover {
-    background: #74b9ff;
-}
-
-/* Enlace de volver */
-a {
-    display: block;
-    margin-top: 10px;
-    color: #8ac0ff;
+    transition: all 0.3s;
     text-decoration: none;
-    font-weight: bold;
-    transition: 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 1;
+    border: none;
 }
 
-a:hover {
-    color: #6c5ce7;
+.btn-submit {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+.btn-cancel {
+    background-color: var(--accent);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-cancel:hover {
+    background-color: #E0E0E0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .form-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .product-form {
+        padding: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
 }

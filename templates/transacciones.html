@@ -3,74 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Transacciones</title>
+    <title>Historial de Transacciones - Inventario</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Historial de Transacciones</h1>
-        
-        <div class="filtros">
-            <form method="GET" action="{{ url_for('transacciones') }}">
-                <select name="tipo">
-                    <option value="">Todos los tipos</option>
-                    <option value="entrada">Entradas</option>
-                    <option value="salida">Salidas</option>
-                    <option value="eliminación">Eliminaciones</option>
-                </select>
-                <button type="submit">Filtrar</button>
+        <header>
+            <h1>HISTORIAL DE <span>TRANSACCIONES</span></h1>
+            <div class="actions">
+                <a href="{{ url_for('index') }}" class="btn-secondary">
+                    <i class="icon">←</i> VOLVER AL INVENTARIO
+                </a>
+            </div>
+        </header>
+
+        <div class="filters-container">
+            <form method="GET" action="{{ url_for('transacciones') }}" class="filter-form">
+                <div class="form-group">
+                    <label for="tipo">Filtrar por:</label>
+                    <select id="tipo" name="tipo" class="filter-select">
+                        <option value="">Todas las transacciones</option>
+                        <option value="entrada" {% if tipo_seleccionado == 'entrada' %}selected{% endif %}>Entradas</option>
+                        <option value="salida" {% if tipo_seleccionado == 'salida' %}selected{% endif %}>Salidas</option>
+                        <option value="eliminación" {% if tipo_seleccionado == 'eliminación' %}selected{% endif %}>Eliminaciones</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-filter">
+                    <i class="icon">🔍</i> APLICAR FILTRO
+                </button>
             </form>
-        </div> 
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tipo</th>
-                    <th>Fecha</th>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Usuario</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for transaccion in transacciones %}
-                <tr>
-                    <td>{{ transaccion._id }}</td>
-                    <td class="tipo-{{ transaccion.tipo }}">
-                        {% if transaccion.tipo == 'eliminación' %}
-                            <span class="eliminacion">ELIMINADO</span>
-                        {% else %}
-                            {{ transaccion.tipo|capitalize }}
-                        {% endif %}
-                    </td>
-                    <td>{{ transaccion.fecha|datetimeformat }}</td>
-                    <td>
-                        {% if transaccion.tipo == 'eliminación' %}
-                            {{ transaccion.producto_nombre }} <span class="eliminacion">(ELIMINADO)</span>
-                        {% else %}
-                            {% if transaccion.producto %}
-                                {{ transaccion.producto.nombre }}
-                            {% else %}
-                                Producto no disponible
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                    <td>{{ transaccion.cantidad }}</td>
-                    <td>{{ transaccion.usuario if transaccion.usuario else 'Sistema' }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="6" class="text-center">No hay transacciones registradas</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <div class="acciones">
-            <a href="{{ url_for('index') }}" class="btn-volver">Volver al inventario</a>
         </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>TIPO</th>
+                        <th>FECHA</th>
+                        <th>PRODUCTO</th>
+                        <th>CANTIDAD</th>
+                        <th>USUARIO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trans in transacciones %}
+                    <tr>
+                        <td class="tipo-cell tipo-{{ trans.tipo }}">
+                            {% if trans.tipo == 'entrada' %}
+                                <span class="tipo-badge entrada">ENTRADA
+                                </span>
+                            {% elif trans.tipo == 'salida' %}
+                                <span class="tipo-badge salida">SALIDA
+                                </span>
+                            {% else %}
+                                <span class="tipo-badge eliminacion">ELIMINADO
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ trans.fecha|datetimeformat('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            {% if trans.tipo == 'eliminación' %}
+                                {{ trans.producto_nombre }}
+                            {% else %}
+                                {{ trans.producto.nombre if trans.producto else 'N/A' }}
+                            {% endif %}
+                        </td>
+                        <td class="cantidad-cell">{{ trans.cantidad }}</td>
+                        <td>{{ trans.usuario or 'Sistema' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="no-data">
+                            <i class="icon">📭</i> No se encontraron transacciones
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <p>Sistema de Gestión de Inventarios &copy; {{ now.year if now else '2025' }}</p>
+        </footer>
     </div>
 </body>
 </html>

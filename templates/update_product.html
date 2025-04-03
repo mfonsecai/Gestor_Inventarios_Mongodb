@@ -3,29 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actualizar Producto</title>
+    <title>Actualizar Producto - Inventario</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style2.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body class="container mt-5">
-
-    <div class="card p-4 shadow">
-        <h1 class="text-center">Actualizar Producto</h1>
-        <form method="POST" action="{{ url_for('update_product', product_id=producto._id) }}">
-            <div class="mb-3">
-                <label for="current_stock" class="form-label">Stock actual de <strong>{{ producto.nombre }}</strong>:</label>
-                <input type="number" id="current_stock" class="form-control" value="{{ producto.stock }}" readonly>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ACTUALIZAR <span>PRODUCTO</span></h1>
+            <p>Modifique el stock del producto seleccionado</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('update_product', product_id=producto._id) }}" class="update-form">
+            <div class="product-info">
+                <div class="product-name">{{ producto.nombre }}</div>
+                <div class="product-category">{{ producto.categoria }}</div>
             </div>
-            <div class="mb-3">
-                <label for="stock" class="form-label">Nuevo stock:</label>
-                <input type="number" id="stock" name="stock" class="form-control" required min="0">
+            
+            <div class="form-group">
+                <label for="current_stock">STOCK ACTUAL:</label>
+                <input type="number" id="current_stock" value="{{ producto.stock }}" readonly>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Actualizar</button>
+            
+            <div class="form-group">
+                <label for="stock">NUEVO STOCK:</label>
+                <input type="number" id="stock" name="stock" required min="0" placeholder="Ingrese la nueva cantidad">
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-update">
+                    <i class="icon">🔄</i> ACTUALIZAR STOCK
+                </button>
+                <a href="{{ url_for('index') }}" class="btn-cancel">
+                    <i class="icon">↩️</i> CANCELAR
+                </a>
+            </div>
         </form>
-        <br>
-        <a href="{{ url_for('index') }}" class="btn btn-secondary w-100">Volver al inventario</a>
     </div>
-
 </body>
 </html>
