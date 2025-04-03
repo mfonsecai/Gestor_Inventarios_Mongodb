@@ -5,9 +5,10 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
 
+# Inicialización de la aplicación Flask
 app = Flask(__name__)
+app.secret_key = 'arquitectura'  # Clave secreta para manejar sesiones seguras
 
-# Configuración de MongoDB
 # Configuración de MongoDB
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/inventarios'
 try:
@@ -17,19 +18,20 @@ try:
     print("Colecciones disponibles:", db.list_collection_names())
 except Exception as e:
     print("Error al conectar con MongoDB:", str(e))
-app.secret_key = 'arquitectura'  # Clave secreta para manejar sesiones
 
-# Configurar LoginManager
+# Configuración del sistema de autenticación
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'login'  # Ruta a la que redirigir si no está autenticado
 
+# Clase Usuario para manejar la autenticación
 class Usuario(UserMixin):
     def __init__(self, user_data):
-        self.id = str(user_data['_id'])
+        self.id = str(user_data['_id'])  # Convertir ObjectId a string
         self.nombre = user_data['nombre']
         self.contrasena = user_data['contrasena']
-        self.rol = user_data['rol']
+        self.rol = user_data['rol']  # Roles: empleado, admin, superadmin
 
+# Función para cargar usuarios desde la base de datos
 @login_manager.user_loader
 def load_user(user_id):
     user_data = db.usuarios.find_one({'_id': ObjectId(user_id)})
@@ -37,32 +39,48 @@ def load_user(user_id):
         return None
     return Usuario(user_data)
 
-# Ruta principal
+# Filtro para formatear fechas en las plantillas HTML
+def format_datetime(value, format='%Y-%m-%d %H:%M'):
+    """Formatea objetos datetime para mostrarlos en las vistas"""
+    if isinstance(value, datetime):
+        return value.strftime(format)
+    return value
+
+app.jinja_env.filters['datetimeformat'] = format_datetime
+
+# --------------------------------------------------
+# RUTAS DE LA APLICACIÓN
+# --------------------------------------------------
+
 @app.route('/')
 def index():
+    """Página principal que muestra el inventario o redirige según rol"""
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     
+    # Admin y superadmin ven el inventario completo
     if current_user.rol in ['admin', 'superadmin']:
         productos = list(db.productos.find())
         return render_template('index.html', productos=productos)
     else:
+        # Empleados son redirigidos a la vista de solo lectura
         return redirect(url_for('visualizar'))
-    
 
-# Ruta para login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Maneja el inicio de sesión de usuarios"""
     if request.method == 'POST':
         nombre = request.form['nombre']
         contrasena = request.form['contrasena']
         usuario_data = db.usuarios.find_one({'nombre': nombre})
 
+        # Verificar credenciales
         if usuario_data and usuario_data['contrasena'] == contrasena:
             usuario = Usuario(usuario_data)
             login_user(usuario)
             flash("Inicio de sesión exitoso", "success")
             
+            # Redirigir según rol
             if usuario.rol in ['admin', 'superadmin']:
                 return redirect(url_for('index'))
             else:
@@ -71,17 +89,17 @@ def login():
             flash("Credenciales incorrectas", "error")
     return render_template('login.html')
 
-# Ruta para registro de usuarios
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
+    """Permite registrar nuevos usuarios (por defecto como empleados)"""
     if request.method == 'POST':
         usuario = {
             'nombre': request.form['nombre'],
             'contrasena': request.form['contrasena'],
-            'rol': 'empleado'
+            'rol': 'empleado'  # Rol por defecto
         }
         
-        # Verificar si el usuario ya existe
+        # Validar que el usuario no exista
         if db.usuarios.find_one({'nombre': usuario['nombre']}):
             flash("El nombre de usuario ya existe", "error")
             return redirect(url_for('registro'))
@@ -91,10 +109,10 @@ def registro():
         return redirect(url_for('login'))
     return render_template('registro.html')
 
-# Ruta para asignar roles
 @app.route('/asignar_rol/<user_id>', methods=['GET', 'POST'])
 @login_required
 def asignar_rol(user_id):
+    """Permite a superadmins cambiar roles de usuarios"""
     if current_user.rol != 'superadmin':
         flash("No tienes permisos para acceder a esta página", "error")
         return redirect(url_for('index'))
@@ -115,26 +133,10 @@ def asignar_rol(user_id):
 
     return render_template('asignar_rol.html', usuario=usuario)
 
-
-
-from datetime import datetime
-
-# ... (otras importaciones)
-def format_datetime(value, format='%Y-%m-%d %H:%M'):
-    """Filtro para formatear fechas en las plantillas"""
-    if isinstance(value, datetime):
-        return value.strftime(format)
-    return value
-
-# Después de crear la aplicación Flask, registra el filtro
-app.jinja_env.filters['datetimeformat'] = format_datetime
-
-# Ruta para ver transacciones
-
-# Ruta para transacciones con filtrado
 @app.route('/transacciones')
 @login_required
 def transacciones():
+    """Muestra el historial de transacciones con opción de filtrado"""
     tipo_filtro = request.args.get('tipo', '')
     
     # Construir consulta basada en filtros
@@ -144,15 +146,14 @@ def transacciones():
     
     transacciones = list(db.transacciones.find(query).sort('fecha', -1))
     
+    # Enriquecer datos de transacciones con información de productos
     transacciones_pobladas = []
     for trans in transacciones:
-        # Para transacciones normales
         if trans['tipo'] in ['entrada', 'salida']:
             producto = db.productos.find_one({'_id': trans['producto_id']})
             trans['producto'] = {
                 'nombre': producto['nombre'] if producto else 'Producto eliminado'
             }
-        # Para eliminaciones
         elif trans['tipo'] == 'eliminación':
             trans['producto'] = {'nombre': trans.get('producto_nombre', 'Producto eliminado')}
         
@@ -162,10 +163,10 @@ def transacciones():
                          transacciones=transacciones_pobladas,
                          tipo_seleccionado=tipo_filtro)
 
-# Ruta para agregar producto (actualizada para registrar usuario)
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_product():
+    """Agrega nuevos productos al inventario"""
     if current_user.rol not in ['admin', 'superadmin']:
         flash("No tienes permisos para acceder a esta página", "error")
         return redirect(url_for('index'))
@@ -179,6 +180,7 @@ def add_product():
             'stock': int(request.form['stock'])
         }
         
+        # Insertar producto y registrar transacción
         producto_id = db.productos.insert_one(producto).inserted_id
         
         transaccion = {
@@ -186,7 +188,7 @@ def add_product():
             'fecha': datetime.now(),
             'producto_id': producto_id,
             'cantidad': int(request.form['stock']),
-            'usuario': current_user.nombre  # Registrar usuario que añadió
+            'usuario': current_user.nombre  # Registrar quién hizo la acción
         }
         db.transacciones.insert_one(transaccion)
 
@@ -195,11 +197,11 @@ def add_product():
     
     return render_template('add_product.html')
 
-# Ruta para actualizar producto
 @app.route('/update/<product_id>', methods=['GET', 'POST'])
 @login_required
 def update_product(product_id):
-    # Validar que el product_id es un ObjectId válido
+    """Actualiza la información de un producto existente"""
+    # Validar ID del producto
     if not ObjectId.is_valid(product_id):
         flash("ID de producto inválido", "error")
         return redirect(url_for('index'))
@@ -210,32 +212,27 @@ def update_product(product_id):
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        print(f"Datos del formulario recibidos: {request.form}")  # Debug
-        
         try:
             nuevo_stock = int(request.form['stock'])
-            print(f"Stock actual: {producto['stock']}, Nuevo stock: {nuevo_stock}")  # Debug
-            
-            # Calcular diferencia
             diferencia = nuevo_stock - producto['stock']
             
-            # Actualizar en MongoDB
-            result = db.productos.update_one(
+            # Actualizar stock en la base de datos
+            db.productos.update_one(
                 {'_id': ObjectId(product_id)},
                 {'$set': {'stock': nuevo_stock}}
             )
-            print(f"Resultado de actualización: {result.modified_count} documentos modificados")  # Debug
             
+            # Registrar transacción si hubo cambio en el stock
             if diferencia != 0:
                 tipo = "entrada" if diferencia > 0 else "salida"
                 transaccion = {
                     'tipo': tipo,
                     'fecha': datetime.now(),
                     'producto_id': ObjectId(product_id),
-                    'cantidad': abs(diferencia)
+                    'cantidad': abs(diferencia),
+                    'usuario': current_user.nombre
                 }
                 db.transacciones.insert_one(transaccion)
-                print("Transacción registrada")  # Debug
             
             flash("Producto actualizado correctamente", "success")
             return redirect(url_for('index'))
@@ -244,15 +241,13 @@ def update_product(product_id):
             flash("El stock debe ser un número entero válido", "error")
         except Exception as e:
             flash(f"Error al actualizar: {str(e)}", "error")
-            print(f"Error: {str(e)}")  # Debug
     
     return render_template('update_product.html', producto=producto)
 
-
-# Ruta para eliminar producto
 @app.route('/delete/<product_id>', methods=['POST'])
 @login_required
 def delete_product(product_id):
+    """Elimina un producto del inventario y registra la transacción"""
     try:
         producto = db.productos.find_one({'_id': ObjectId(product_id)})
         if not producto:
@@ -268,9 +263,7 @@ def delete_product(product_id):
             'producto_nombre': producto['nombre'],
             'usuario': current_user.nombre
         }
-        print("Registrando transacción de eliminación:", transaccion)  # Debug
-        result = db.transacciones.insert_one(transaccion)
-        print("Transacción insertada con ID:", result.inserted_id)  # Debug
+        db.transacciones.insert_one(transaccion)
 
         # Eliminar el producto
         db.productos.delete_one({'_id': ObjectId(product_id)})
@@ -279,14 +272,12 @@ def delete_product(product_id):
 
     except Exception as e:
         flash(f"Error al eliminar producto: {str(e)}", "error")
-        print("Error al eliminar producto:", str(e))  # Debug
         return redirect(url_for('index'))
     
-    
-# Ruta para eliminar usuario
 @app.route('/eliminar_usuario/<user_id>')
 @login_required
 def eliminar_usuario(user_id):
+    """Elimina un usuario (solo para superadmins)"""
     if current_user.rol != 'superadmin':
         flash("No tienes permisos para acceder a esta página", "error")
         return redirect(url_for('index'))
@@ -295,10 +286,10 @@ def eliminar_usuario(user_id):
     flash("Usuario eliminado correctamente", "success")
     return redirect(url_for('lista_usuarios'))
 
-# Ruta para lista de usuarios
 @app.route('/usuarios')
 @login_required
 def lista_usuarios():
+    """Muestra lista de usuarios (solo para superadmins)"""
     if current_user.rol != 'superadmin':
         flash("No tienes permisos para acceder a esta página", "error")
         return redirect(url_for('index'))
@@ -306,10 +297,10 @@ def lista_usuarios():
     usuarios = list(db.usuarios.find())
     return render_template('lista_usuarios.html', usuarios=usuarios)
 
-# Ruta para visualización de empleados
 @app.route('/visualizar')
 @login_required
 def visualizar():
+    """Vista de solo lectura para empleados"""
     if current_user.rol not in ['empleado']:
         flash("No tienes permisos para acceder a esta página", "error")
         return redirect(url_for('index'))
@@ -317,16 +308,13 @@ def visualizar():
     productos = list(db.productos.find())
     return render_template('visualizar.html', productos=productos)
 
-
 @app.route('/logout')
 @login_required
 def logout():
+    """Cierra la sesión del usuario"""
     logout_user()
     flash("Sesión cerrada correctamente", "success")
     return redirect(url_for('login'))
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
