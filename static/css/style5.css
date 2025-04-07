@@ -117,9 +117,24 @@ button:hover {
     box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
 }
 
-/* Footer y enlace */
 .footer {
     margin-top: 25px;
     padding-top: 20px;
     border-top: 1px solid #EEE;
-   
+}
+
+a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+a strong {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}

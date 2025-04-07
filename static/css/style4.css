@@ -136,3 +136,49 @@ a:hover {
         font-size: 2rem;
     }
 }
+
+        /* Estilos adicionales para los mensajes flash */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 300px;
+        }
+        
+        .flash-message {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            color: white;
+            opacity: 0.9;
+            animation: fadeIn 0.5s, fadeOut 0.5s 4.5s;
+            animation-fill-mode: forwards;
+        }
+        
+        .success {
+            background-color: #28a745;
+        }
+        
+        .error {
+            background-color: #dc3545;
+        }
+        
+        .info {
+            background-color: #17a2b8;
+        }
+        
+        .warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 0.9; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 0.9; }
+            to { opacity: 0; display: none; }
+        }

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Sistema de Gestión</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
+</head>
+<body>
+        <!-- Mensajes Flash -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    <div class="container">
+        <header>
+            <h1>INVENT<span>ARIO</span></h1>
+            <div class="actions">
+                <a href="{{ url_for('add_product') }}" class="btn-primary">Agregar Producto
+                </a>
+                <a href="{{ url_for('transacciones') }}" class="btn-secondary">Transacciones
+                </a>
+                {% if current_user.rol == 'superadmin' %}
+                <a href="{{ url_for('lista_usuarios') }}" class="btn-secondary">Usuarios
+                </a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="btn-logout">Salir
+                </a>
+            </div>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto._id }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.descripcion }}</td>
+                        <td>{{ producto.categoria }}</td>
+                        <td>${{ "%.2f"|format(producto.precio) }}</td>
+                        <td class="stock-cell {% if producto.stock < 10 %}low-stock{% endif %}">
+                            {{ producto.stock }}
+                        </td>
+                        <td class="actions-cell">
+                            <a href="{{ url_for('update_product', product_id=producto._id) }}" class="btn-update">Editar
+                            </a>
+                            <form action="{{ url_for('delete_product', product_id=producto._id) }}" method="POST" onsubmit="return confirmarEliminacion(this)">
+                                <button type="submit" class="btn-delete">Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="no-products">No hay productos registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Sistema de Gestión de Inventarios</p>
+        </footer>
+    </div>
+    
+    <script>
+        function confirmarEliminacion(form) {
+            const confirmacion = confirm("¿Está seguro que desea eliminar este producto del inventario?");
+            if (confirmacion) {
+                form.classList.add('submitting');
+                return true;
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>

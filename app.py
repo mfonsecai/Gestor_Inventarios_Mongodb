@@ -21,7 +21,7 @@ except Exception as e:
 
 # Configuración del sistema de autenticación
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'  # Ruta a la que redirigir si no está autenticado
+login_manager.login_view = 'index'  # Ahora la vista de login es index.html
 
 # Clase Usuario para manejar la autenticación
 class Usuario(UserMixin):
@@ -54,40 +54,42 @@ app.jinja_env.filters['datetimeformat'] = format_datetime
 
 @app.route('/')
 def index():
-    """Página principal que muestra el inventario o redirige según rol"""
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-    
+
+    return render_template('index.html')
+
+@app.route('/login', methods=['POST'])
+def login():
+    """Maneja el inicio de sesión de usuarios """
+    nombre = request.form['nombre']
+    contrasena = request.form['contrasena']
+    usuario_data = db.usuarios.find_one({'nombre': nombre})
+
+    # Verificar credenciales
+    if usuario_data and usuario_data['contrasena'] == contrasena:
+        usuario = Usuario(usuario_data)
+        login_user(usuario)
+        flash("Inicio de sesión exitoso", "success")
+        
+        # Redirigir según rol
+        if usuario.rol in ['admin', 'superadmin']:
+            return redirect(url_for('inventario'))
+        else:
+            return redirect(url_for('visualizar'))
+    else:
+        flash("Credenciales incorrectas", "error")
+    return redirect(url_for('index'))
+
+@app.route('/inventario')
+@login_required
+def inventario():
+    """Página principal del inventario (antes index.html)"""
     # Admin y superadmin ven el inventario completo
     if current_user.rol in ['admin', 'superadmin']:
         productos = list(db.productos.find())
-        return render_template('index.html', productos=productos)
+        return render_template('inventario.html', productos=productos)
     else:
         # Empleados son redirigidos a la vista de solo lectura
         return redirect(url_for('visualizar'))
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    """Maneja el inicio de sesión de usuarios"""
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        contrasena = request.form['contrasena']
-        usuario_data = db.usuarios.find_one({'nombre': nombre})
-
-        # Verificar credenciales
-        if usuario_data and usuario_data['contrasena'] == contrasena:
-            usuario = Usuario(usuario_data)
-            login_user(usuario)
-            flash("Inicio de sesión exitoso", "success")
-            
-            # Redirigir según rol
-            if usuario.rol in ['admin', 'superadmin']:
-                return redirect(url_for('index'))
-            else:
-                return redirect(url_for('visualizar'))
-        else:
-            flash("Credenciales incorrectas", "error")
-    return render_template('login.html')
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -106,7 +108,7 @@ def registro():
         
         db.usuarios.insert_one(usuario)
         flash("Usuario registrado correctamente", "success")
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
     return render_template('registro.html')
 
 @app.route('/asignar_rol/<string:user_id>', methods=['GET', 'POST'])
@@ -114,7 +116,7 @@ def registro():
 def asignar_rol(user_id):
     if current_user.rol != 'superadmin':
         flash("No tienes permisos para acceder a esta página", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     try:
         # Convertir a ObjectId solo si es necesario
@@ -178,7 +180,7 @@ def add_product():
     """Agrega nuevos productos al inventario"""
     if current_user.rol not in ['admin', 'superadmin']:
         flash("No tienes permisos para acceder a esta página", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     if request.method == 'POST':
         producto = {
@@ -202,7 +204,7 @@ def add_product():
         db.transacciones.insert_one(transaccion)
 
         flash("Producto agregado correctamente", "success")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
     
     return render_template('add_product.html')
 
@@ -213,12 +215,12 @@ def update_product(product_id):
     # Validar ID del producto
     if not ObjectId.is_valid(product_id):
         flash("ID de producto inválido", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     producto = db.productos.find_one({'_id': ObjectId(product_id)})
     if not producto:
         flash("Producto no encontrado", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     if request.method == 'POST':
         try:
@@ -244,7 +246,7 @@ def update_product(product_id):
                 db.transacciones.insert_one(transaccion)
             
             flash("Producto actualizado correctamente", "success")
-            return redirect(url_for('index'))
+            return redirect(url_for('inventario'))
             
         except ValueError:
             flash("El stock debe ser un número entero válido", "error")
@@ -261,7 +263,7 @@ def delete_product(product_id):
         producto = db.productos.find_one({'_id': ObjectId(product_id)})
         if not producto:
             flash("Producto no encontrado", "error")
-            return redirect(url_for('index'))
+            return redirect(url_for('inventario'))
 
         # Registrar transacción de eliminación
         transaccion = {
@@ -277,18 +279,18 @@ def delete_product(product_id):
         # Eliminar el producto
         db.productos.delete_one({'_id': ObjectId(product_id)})
         flash("Producto eliminado correctamente", "success")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     except Exception as e:
         flash(f"Error al eliminar producto: {str(e)}", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
     
 @app.route('/eliminar_usuario/<user_id>', methods=['POST'])
 @login_required
 def eliminar_usuario(user_id):
     if current_user.rol != 'superadmin':
         flash("No tienes permisos para acceder a esta página", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     db.usuarios.delete_one({'_id': ObjectId(user_id)})
     flash("Usuario eliminado correctamente", "success")
@@ -298,6 +300,10 @@ def eliminar_usuario(user_id):
 @login_required
 def lista_usuarios():
     """Muestra lista de usuarios (solo para superadmins)"""
+    if current_user.rol != 'superadmin':
+        flash("No tienes permisos para acceder a esta página", "error")
+        return redirect(url_for('inventario'))
+        
     usuarios = list(db.usuarios.find())
     return render_template('lista_usuarios.html', usuarios=usuarios)
 
@@ -307,7 +313,7 @@ def visualizar():
     """Vista de solo lectura para empleados"""
     if current_user.rol not in ['empleado']:
         flash("No tienes permisos para acceder a esta página", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     productos = list(db.productos.find())
     return render_template('visualizar.html', productos=productos)
@@ -318,7 +324,7 @@ def logout():
     """Cierra la sesión del usuario"""
     logout_user()
     flash("Sesión cerrada correctamente", "success")
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)

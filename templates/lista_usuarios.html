@@ -8,11 +8,22 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/folder.png') }}">
 </head>
 <body>
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
     <div class="container">
         <header>
             <h1>GESTIÓN DE <span>USUARIOS</span></h1>
             <div class="actions">
-                <a href="{{ url_for('index') }}" class="btn-secondary">
+                <a href="{{ url_for('inventario') }}" class="btn-secondary">
                     <i class="icon">←</i> VOLVER AL INVENTARIO
                 </a>
             </div>
